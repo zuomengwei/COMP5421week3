@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import {
   getNotes,
   getServerNotes,
@@ -16,6 +23,7 @@ export default function NotesApp() {
   const notes = useSyncExternalStore(subscribeNotes, getNotes, getServerNotes);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
   const [status, setStatus] = useState("");
 
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -28,6 +36,16 @@ export default function NotesApp() {
       : (notes[0]?.id ?? null);
 
   const activeNote = notes.find((n) => n.id === activeId) ?? null;
+
+  // Case-insensitive search over title and body. An empty query keeps all.
+  const filteredNotes = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return notes;
+    return notes.filter(
+      (n) =>
+        n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q)
+    );
+  }, [notes, query]);
 
   // Cancel a pending autosave when the component unmounts.
   useEffect(() => {
@@ -124,7 +142,14 @@ export default function NotesApp() {
 
       <main>
         <aside>
-          <NoteList notes={notes} activeId={activeId} onSelect={handleSelect} />
+          <NoteList
+            notes={filteredNotes}
+            hasNotes={notes.length > 0}
+            query={query}
+            activeId={activeId}
+            onSelect={handleSelect}
+            onQueryChange={setQuery}
+          />
         </aside>
 
         <Editor

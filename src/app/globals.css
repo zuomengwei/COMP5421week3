@@ -89,6 +89,27 @@ aside {
   overflow-y: auto;
 }
 
+.search-input {
+  width: 100%;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: #18181b;
+  background: #fff;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: #3b82f6;
+}
+
+.search-input::placeholder {
+  color: #71717a;
+}
+
 .notes-list {
   list-style: none;
   margin: 0;
